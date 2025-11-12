@@ -4,6 +4,7 @@ package winapi
 
 //sys CopyFileW(existingFileName *uint16, newFileName *uint16, failIfExists int32) (err error) = kernel32.CopyFileW
 //sys NtCreateFile(handle *uintptr, accessMask uint32, oa *ObjectAttributes, iosb *IOStatusBlock, allocationSize *uint64, fileAttributes uint32, shareAccess uint32, createDisposition uint32, createOptions uint32, eaBuffer *byte, eaLength uint32) (status uint32) = ntdll.NtCreateFile
+//sys NtFsControlFile(file windows.Handle, event windows.Handle, apcRoutine uintptr, apcCtx uintptr, iosb *IOStatusBlock, fsControlCode uint32, in []byte, inLength uint32, out []byte, outLength uint32) (status uint32) = ntdll.NtFsControlFile
 //sys NtSetInformationFile(handle uintptr, iosb *IOStatusBlock, information uintptr, length uint32, class uint32) (status uint32) = ntdll.NtSetInformationFile
 
 //sys NtOpenDirectoryObject(handle *uintptr, accessMask uint32, oa *ObjectAttributes) (status uint32) = ntdll.NtOpenDirectoryObject
