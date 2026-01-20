@@ -27,6 +27,9 @@ const (
 	LmrInstanceFlagAllowGuestAuth         = 0x8
 	LmrInstanceFlagSupportsDirectmappedIo = 0x10
 	SmbCeTransportTypeVmbus               = 3
+
+	FileReadAttributes      = 0x00000080
+	FileFlagBackupSemantics = 0x02000000
 )
 
 type IOStatusBlock struct {
@@ -166,7 +169,7 @@ func isLanmanWorkstationRunning() (bool, error) {
 	return status.State == svc.Running, nil
 }
 
-func VsmbMain() {
+func VsmbMain(vsmbKeepAliveHandle *windows.Handle) {
 	logrus.Info("Starting VSMB initialization...")
 
 	logrus.Debug("Configuring LanmanWorkstation service...")
@@ -329,4 +332,31 @@ func VsmbMain() {
 	} else {
 		logrus.Errorf("NtFsControlFile failed: 0x%08X", status)
 	}
+
+	const (
+		device = `\\?\GLOBALROOT\Device\vmsmb\VSMB-{dcc079ae-60ba-4d07-847c-3493609c0870}\defaultEmptyShare`
+	)
+
+	devicePtr, nerr := windows.UTF16PtrFromString(device)
+	if nerr != nil {
+		logrus.WithError(nerr).Errorf("invalid device name %q", device)
+		return
+	}
+	vsmbHandle, err := windows.CreateFile(
+		devicePtr,
+		FileReadAttributes,
+		windows.FILE_SHARE_READ|windows.FILE_SHARE_WRITE|windows.FILE_SHARE_DELETE,
+		nil,
+		windows.OPEN_EXISTING,
+		FileFlagBackupSemantics,
+		0,
+	)
+
+	if err != nil {
+		logrus.WithError(err).Errorf("Failed to open %s", device)
+		return
+	}
+
+	*vsmbKeepAliveHandle = vsmbHandle
+	logrus.Infof("VSMB connection will be alive...")
 }
