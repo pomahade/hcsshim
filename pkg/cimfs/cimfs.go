@@ -63,7 +63,6 @@ func IsVerifiedCimSupported() bool {
 	return build >= 27800 && cimfs.Supported()
 }
 
-
 // IsVerifiedCimWriteSupported returns true if block CIM format supports also writing verification information in the CIM.
 func IsVerifiedCimWriteSupported() bool {
 	build := osversion.Build()
@@ -102,6 +101,7 @@ func IsMergedCimMountSupported() bool {
 	// later along with block CIM support. So use the same check as block CIM here.
 	return IsBlockCimMountSupported()
 }
+
 type BlockCIMType uint32
 
 const (
